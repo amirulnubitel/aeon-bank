@@ -97,9 +97,9 @@ export default function Navbar() {
 		}
 
 		return (
-			<div class="relative flex items-center w-full max-w-md mx-auto">
-				<input type="text" placeholder="Search..." class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 " />
-				<button class="absolute right-0 top-0 h-full px-4 text-gray-600 hover:text-blue-500 ">
+			<div className="relative flex items-center w-full max-w-md mx-auto">
+				<input type="text" placeholder="Search..." className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 " />
+				<button className="absolute right-0 top-0 h-full px-4 text-gray-600 hover:text-blue-500 ">
 					<MagnifyingGlassIcon aria-hidden="true" className="size-5" />
 				</button>
 			</div>
