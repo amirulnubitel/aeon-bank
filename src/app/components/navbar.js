@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Popover, PopoverButton, PopoverGroup, PopoverPanel } from "@headlessui/react";
 import { MagnifyingGlassIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -34,8 +38,90 @@ const menu = [
 ];
 
 export default function Navbar() {
+	const [user, setUser] = useState(null);
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const router = useRouter();
+
+	useEffect(() => {
+		// Check authentication status on component mount
+		const checkAuth = () => {
+			const token = localStorage.getItem("authToken");
+			const userData = localStorage.getItem("user");
+
+			if (token && userData) {
+				try {
+					const parsedUser = JSON.parse(userData);
+					setUser(parsedUser);
+					setIsAuthenticated(true);
+				} catch (error) {
+					console.error("Error parsing user data:", error);
+					handleLogout();
+				}
+			} else {
+				setIsAuthenticated(false);
+				setUser(null);
+			}
+		};
+
+		checkAuth();
+
+		// Listen for storage changes (e.g., login/logout from another tab)
+		const handleStorageChange = (e) => {
+			if (e.key === "authToken" || e.key === "user") {
+				checkAuth();
+			}
+		};
+
+		window.addEventListener("storage", handleStorageChange);
+		return () => window.removeEventListener("storage", handleStorageChange);
+	}, []);
+
+	const handleLogout = () => {
+		localStorage.removeItem("authToken");
+		localStorage.removeItem("user");
+		setIsAuthenticated(false);
+		setUser(null);
+		router.push("/");
+	};
+
+	const renderAuthButtons = () => {
+		if (isAuthenticated && user) {
+			return (
+				<div className="flex items-center space-x-4">
+					<span className="text-sm text-gray-600">Welcome, {user.name}</span>
+					<button onClick={handleLogout} className="text-base cursor-pointer font-medium text-gray-500 hover:text-gray-900">
+						Logout
+					</button>
+				</div>
+			);
+		}
+
+		return (
+			<div class="relative flex items-center w-full max-w-md mx-auto">
+				<input type="text" placeholder="Search..." class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 " />
+				<button class="absolute right-0 top-0 h-full px-4 text-gray-600 hover:text-blue-500 ">
+					<MagnifyingGlassIcon aria-hidden="true" className="size-5" />
+				</button>
+			</div>
+		);
+	};
+
+	const renderMobileAuthButtons = () => {
+		if (isAuthenticated && user) {
+			return (
+				<div className="px-5 py-6">
+					<div className="space-y-4">
+						<p className="text-center text-sm text-gray-600">Welcome, {user.name}</p>
+						<button onClick={handleLogout} className="block cursor-pointer w-full text-center text-base font-medium text-[#ef24b8] hover:text-[#d91ea3]">
+							Logout
+						</button>
+					</div>
+				</div>
+			);
+		}
+	};
 	return (
-		<Popover className="relative bg-white">
+		<Popover className="fixed w-full bg-white">
 			<div aria-hidden="true" className="pointer-events-none absolute inset-0 z-30 shadow-sm" />
 			<div className="relative z-20">
 				<div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 sm:py-4 md:justify-start md:space-x-10 lg:px-8">
@@ -60,11 +146,7 @@ export default function Navbar() {
 								</Link>
 							))}
 						</PopoverGroup>
-						<div className="flex items-center md:ml-12">
-							<Link href="/sign-in" className="text-base font-medium text-gray-500 hover:text-gray-900">
-								Sign In
-							</Link>
-						</div>
+						<div className="flex items-center md:ml-12">{renderAuthButtons()}</div>
 					</div>
 				</div>
 			</div>
@@ -97,13 +179,7 @@ export default function Navbar() {
 							</nav>
 						</div>
 					</div>
-					<div className="px-5 py-6 bg-dark-700">
-						<p className="text-center text-base font-medium text-gray-500">
-							<Link href="/sign-in" className="text-[#ef24b8]">
-								Sign In
-							</Link>
-						</p>
-					</div>
+					{renderMobileAuthButtons()}
 				</div>
 			</PopoverPanel>
 		</Popover>
