@@ -120,6 +120,7 @@ export default function Navbar() {
 			);
 		}
 	};
+
 	return (
 		<Popover className="fixed w-full bg-white">
 			<div aria-hidden="true" className="pointer-events-none absolute inset-0 z-30 shadow-sm" />

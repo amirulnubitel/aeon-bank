@@ -43,7 +43,7 @@ export default function Dashboard() {
 		const userData = localStorage.getItem("user");
 
 		if (!token || !userData) {
-			router.push("/sign-in");
+			router.push("/");
 			return;
 		}
 
@@ -68,9 +68,9 @@ export default function Dashboard() {
 		// Clear session data
 		localStorage.removeItem("authToken");
 		localStorage.removeItem("user");
-
+		setUser(null);
 		// Redirect to login
-		router.push("/sign-in");
+		router.push("/");
 	};
 
 	if (loading) {
